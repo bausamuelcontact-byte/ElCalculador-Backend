@@ -8,7 +8,7 @@ const uid2 = require('uid2');
 const bcrypt = require('bcrypt');
 
 router.post('/signup', (req, res) => {
-  if (!checkBody(req.body, ['firstname', 'lastname', 'phone', 'email', 'password', 'restaurantname'])) {
+  if (!checkBody(req.body, ['firstname', 'lastname', 'tel', 'mail', 'password', 'restaurantName'])) {
     res.json({ result: false, error: 'Un ou plusieurs champs obligatoires manquants.' });
     return;
   }
@@ -21,9 +21,9 @@ router.post('/signup', (req, res) => {
       const newUser = new User({
         firstname: data.firstname,
         lastname: data.lastname,
-        phone: data.phone,
-        email: data.email,
-        restaurantname: data.restaurantname,
+        tel: data.tel,
+        mail: data.mail,
+        restaurantName: data.restaurantName,
         avatar: data.avatar,
         password: hash,
         token: uid2(32),
