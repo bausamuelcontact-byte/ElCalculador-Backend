@@ -15,10 +15,7 @@
     "http-errors": "~1.6.3",
     "mongoose": "^9.0.1",
     "morgan": "~1.9.1",
-<<<<<<< HEAD
-    "nodemon": "^3.1.11"
-=======
+    "nodemon": "^3.1.11",
     "uid2": "^1.0.0"
->>>>>>> 2d33c7da285329a97dfa1b13a79cdc698f598dab
   }
 }
