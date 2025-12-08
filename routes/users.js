@@ -12,6 +12,9 @@ router.post('/signup', (req, res) => {
   // Grabbed from emailregex.com
   const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
+  // Check numéro de téléphone format correct
+  const PHONE_REGEX_FR = /^(0[67]\d{8}|(?:\+33)[67]\d{8})$/;
+
   if (!checkBody(req.body, ['firstname', 'lastname', 'tel', 'mail', 'password', 'restaurantName'])) {
     res.json({ result: false, error: 'Un ou plusieurs champs obligatoires manquants.' });
     return;
@@ -19,6 +22,12 @@ router.post('/signup', (req, res) => {
 
   if (!EMAIL_REGEX.test(req.body.mail)) {
     res.json({ result: false, error: 'Format adresse mail incorrect.' });
+    return;
+  }
+
+  if (!PHONE_REGEX_FR.test(req.body.tel)) {
+    res.json({ result: false, error: 'Format numéro de téléphone incorrect.' });
+    return;
   }
 
   // Check if the user has not already been registered
@@ -48,12 +57,12 @@ router.post('/signup', (req, res) => {
 });
 
 router.post('/signin', (req, res) => {
-  if (!checkBody(req.body, ['email', 'password'])) {
+  if (!checkBody(req.body, ['mail', 'password'])) {
     res.json({ result: false, error: 'Email ou mot de passe non renseigné' });
     return;
   }
 
-  User.findOne({ username: req.body.username }).then(data => {
+  User.findOne({ mail: req.body.mail }).then(data => {
     if (data && bcrypt.compareSync(req.body.password, data.password)) {
       res.json({ result: true, token: data.token });
     } else {
@@ -65,7 +74,7 @@ router.post('/signin', (req, res) => {
 router.get('/isConnected/:token', (req, res) => {
   User.findOne({ token: req.params.token }).then(data => {
     if (data) {
-      res.json({ result: true, userInfo : {'firstname':data.firstname, 'lastname':data.lastname, 'restaurantname':data.restaurantname, 'avatar':data.avatar} });
+      res.json({ result: true, userInfo : {'firstname':data.firstname, 'lastname':data.lastname, 'restaurantname':data.restaurantName, 'avatar':data.avatar} });
     } else {
       res.json({ result: false, error: 'User not found' });
     }
