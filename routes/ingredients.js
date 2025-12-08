@@ -1,10 +1,10 @@
 var express = require("express");
 var router = express.Router();
-const Ingredient = require("");
+const Ingredient = require("../models/ingredients");
 
-// Recuperation de tous les ingrédients
+// Recuperation de tous les ingrédients selon user
 router.get("/", (req, res) => {
-  Ingredient.find()
+  Ingredient.find({ user: req.body.token })
     .then((data) => {
       res.json({ ingredient: data });
     })
@@ -14,17 +14,17 @@ router.get("/", (req, res) => {
 // Création d'un ingrédient
 router.post("/", (req, res) => {
   const newIngredient = new Ingredient({
-    name: String,
-    quantity: Number,
-    price: Number,
-    unit: String,
-    tva: Number,
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
+    name: req.body.name,
+    quantity: req.body.quantity,
+    price: req.body.price,
+    unit: req.body.unit,
+    TVA: req.body.tva,
+    user: req.body.token,
   });
   newIngredient
     .save()
     .then(() => {
-      res.json({ result: true, message: "Ingrédient ajouté" });
+      res.json({ result: true });
     })
     .catch((err) => console.error("Probleme ajout ingredient :", err));
 });
@@ -51,8 +51,8 @@ router.put("/", (req, res) => {
 
 //Suppression d'un ingredient par son id
 router.delete("/", (req, res) => {
-  Ingredient.deleteOne({ id: req.body.id }).then(() => {
-    Ingredient.findOne({ id: req.body.id }).then((data) => {
+  Ingredient.deleteOne({ _id: req.body.id }).then(() => {
+    Ingredient.findOne({ _id: req.body.id }).then((data) => {
       if (data) {
         res.json({ result: false, error: "erreur de suppression" });
       } else {

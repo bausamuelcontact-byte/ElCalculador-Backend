@@ -3,12 +3,15 @@ const mongoose = require("mongoose");
 const recipeSchema = mongoose.Schema({
   name: String,
   price: Number,
+  TVA: Number,
   allergens: [String],
-  ingredients: [{ 
-    ingredient: {type: mongoose.Schema.Types.ObjectId, ref: "ingredients"}, 
-    quantity: Number,
-    unit: String,
-  }],
+  ingredients: [
+    {
+      ingredient: { type: mongoose.Schema.Types.ObjectId, ref: "ingredients" },
+      quantity: Number,
+      unit: String,
+    },
+  ],
   user: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
 });
 
