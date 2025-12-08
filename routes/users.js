@@ -8,9 +8,17 @@ const uid2 = require('uid2');
 const bcrypt = require('bcrypt');
 
 router.post('/signup', (req, res) => {
+
+  // Grabbed from emailregex.com
+  const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
   if (!checkBody(req.body, ['firstname', 'lastname', 'tel', 'mail', 'password', 'restaurantName'])) {
     res.json({ result: false, error: 'Un ou plusieurs champs obligatoires manquants.' });
     return;
+  }
+
+  if (!EMAIL_REGEX.test(req.body.mail)) {
+    res.json({ result: false, error: 'Format adresse mail incorrect.' });
   }
 
   // Check if the user has not already been registered
@@ -19,12 +27,12 @@ router.post('/signup', (req, res) => {
       const hash = bcrypt.hashSync(req.body.password, 10);
 
       const newUser = new User({
-        firstname: data.firstname,
-        lastname: data.lastname,
-        tel: data.tel,
-        mail: data.mail,
-        restaurantName: data.restaurantName,
-        avatar: data.avatar,
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        tel: req.body.tel,
+        mail: req.body.mail,
+        restaurantName: req.body.restaurantName,
+        avatar: req.body.avatar,
         password: hash,
         token: uid2(32),
       });
