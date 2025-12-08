@@ -74,7 +74,7 @@ router.post('/signin', (req, res) => {
 router.get('/isConnected/:token', (req, res) => {
   User.findOne({ token: req.params.token }).then(data => {
     if (data) {
-      res.json({ result: true, userInfo : {'firstname':data.firstname, 'lastname':data.lastname, 'restaurantname':data.restaurantName, 'avatar':data.avatar} });
+      res.json({ result: true, userInfo : {'firstname':data.firstname, 'lastname':data.lastname, 'restaurantName':data.restaurantName, 'avatar':data.avatar} });
     } else {
       res.json({ result: false, error: 'User not found' });
     }
