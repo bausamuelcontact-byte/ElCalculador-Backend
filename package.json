@@ -13,11 +13,7 @@
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "mongoose": "^9.0.1",
-<<<<<<< HEAD
     "morgan": "~1.9.1",
     "nodemon": "^3.1.11"
-=======
-    "morgan": "~1.9.1"
->>>>>>> ad42b0f8f52b95c74656afdd3736c862cecf70e4
   }
 }
