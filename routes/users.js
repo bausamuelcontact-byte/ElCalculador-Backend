@@ -31,7 +31,7 @@ router.post('/signup', (req, res) => {
   }
 
   // Check if the user has not already been registered
-  User.findOne({ username: req.body.email}).then(data => {
+  User.findOne({ mail: req.body.email}).then(data => {
     if (data === null) {
       const hash = bcrypt.hashSync(req.body.password, 10);
 
@@ -74,7 +74,7 @@ router.post('/signin', (req, res) => {
 router.get('/isConnected/:token', (req, res) => {
   User.findOne({ token: req.params.token }).then(data => {
     if (data) {
-      res.json({ result: true, userInfo : {'firstname':data.firstname, 'lastname':data.lastname, 'restaurantname':data.restaurantName, 'avatar':data.avatar} });
+      res.json({ result: true, userInfo : {'firstname':data.firstname, 'lastname':data.lastname, 'restaurantName':data.restaurantName, 'avatar':data.avatar} });
     } else {
       res.json({ result: false, error: 'User not found' });
     }
