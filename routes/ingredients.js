@@ -3,10 +3,14 @@ var router = express.Router();
 const Ingredient = require("../models/ingredients");
 
 // Recuperation de tous les ingrédients selon user
-router.get("/", (req, res) => {
-  Ingredient.find({ user: req.body.token })
+router.get("/search/:id", (req, res) => {
+  Ingredient.find({ user: req.params.id })
     .then((data) => {
-      res.json({ ingredient: data });
+      if (data) {
+        res.json({ ingredient: data });
+      } else {
+        res.json({ ingredient: "aucun ingrédient trouvé" });
+      }
     })
     .catch((err) => console.error("Erreur de recuperation :", err));
 });
@@ -19,7 +23,7 @@ router.post("/", (req, res) => {
     price: req.body.price,
     unit: req.body.unit,
     TVA: req.body.tva,
-    user: req.body.token,
+    user: req.body.user,
   });
   newIngredient
     .save()
