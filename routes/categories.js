@@ -43,14 +43,10 @@ router.put("/update", (req, res) => {
 });
 
 // Afficher toutes les catégories d'un utilisateur
-router.get("/:id", (req, res) => {
-  Category.find({ user: req.params.id })
-    .then((data) => {
-      res.json(data);
-    })
-    .catch((err) => {
-      res.json({ result: false, error: "Server error" });
-    });
+router.get('/:userId', (req,res)=>{
+   Category.find({ user: req.params.userId })
+    .then(data => { res.json({ categories: data }) })
+    .catch(err => { res.json({ result: false, error: 'Server error' })});
 });
 
 // Ajouter une nouvelle recette à une catégorie

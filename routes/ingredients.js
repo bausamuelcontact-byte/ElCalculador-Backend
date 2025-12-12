@@ -5,7 +5,10 @@ const Ingredient = require("../models/ingredients");
 // Recuperation de tous les ingrédients selon user
 router.get("/search/:userId", (req, res) => {
   Ingredient.find({ user: req.params.userId })
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4b6bcb57ef5423a588da397ae3c667c128b7c74a
     .then((data) => {
       if (data) {
         res.json({ ingredient: data });
