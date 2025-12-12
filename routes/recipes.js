@@ -2,13 +2,46 @@ var express = require("express");
 var router = express.Router();
 const Recipe = require("../models/recipes");
 
-// Recupere toutes les recettes
+// Recupere toutes les recettes d'un utilisateur
+router.get("/:userId", (req, res) => {
+  Recipe.find({ user: req.params.userId })
+    .then((data) => {
+      res.json({ result: true, recipe: data });
+    })
+    .catch((err) => console.error("Erreur de recherche recette :", err));
+});
+
+// récupère toutes les recettes
 router.get("/", (req, res) => {
   Recipe.find()
     .then((data) => {
       res.json({ result: true, recipe: data });
     })
     .catch((err) => console.error("Erreur de recherche recette :", err));
+}); 
+
+// récupérer les ingrédients contenus dans toutes les recettes de l'utilisateur en utilisant .populate sur la clé 'ingredients.ingredient'
+router.get("/withIngredients/user/:userId", (req, res) => {
+  Recipe.find({ user: req.params.userId })
+    .populate("ingredients.ingredient")
+    .then((data) => {
+      res.json({ result: true, recipe: data });
+    })
+    .catch((err) => console.error("Erreur de recherche recette avec ingrédients :", err));
+});
+
+// récupérer les ingrédients d'une recette spécifique en utilisant .populate sur la clé 'ingredients.ingredient'
+router.get("/withIngredients/:id", (req, res) => {
+  Recipe.findOne({ _id: req.params.id })
+    .populate("ingredients.ingredient")
+    .then((data) => {
+      if (data) {
+        res.json({ result: true, recipe: data });
+      } else {
+        res.json({ result: false, error: "Recette non trouvée" });
+      }
+    })
+    .catch((err) => console.error("Erreur de recherche recette avec ingrédients :", err));
 });
 
 //Création d'une nouvelle recette
@@ -18,7 +51,7 @@ router.post("/", (req, res) => {
     price: req.body.price,
     allergens: req.body.allergens,
     ingredients: req.body.ingredients,
-    user: req.body.token,
+    user: req.body.userId,
     TVA: req.body.tva,
   });
   newRecipe
@@ -75,8 +108,8 @@ router.put("/ingredients", (req, res) => {
 });
 
 //Suppression d'une recette
-router.delete("/", (req, res) => {
-  Recipe.deleteOne({ _id: req.body.id })
+router.delete("/:id", (req, res) => {
+  Recipe.deleteOne({ _id: req.params.id })
     .then(() => {
       res.json({ result: true });
     })
