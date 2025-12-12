@@ -3,10 +3,10 @@ var router = express.Router();
 const Recipe = require("../models/recipes");
 
 // Recupere toutes les recettes
-router.get("/search/:id", (req, res) => {
-  Ingredient.find({ user: req.params.id });
+router.get("/search/:userId", (req, res) => {
+  Ingredient.find({ user: req.params.userId });
   if (!req.params.id) return res.json({ result: false, error: "Id manquant" });
-  Recipe.find({ user: req.params.id })
+  Recipe.find({ user: req.params.userId })
     .then((data) => {
       if (data) {
         res.json({ recipe: data });
