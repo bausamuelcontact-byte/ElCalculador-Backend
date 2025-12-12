@@ -2,9 +2,9 @@ var express = require("express");
 var router = express.Router();
 const Recipe = require("../models/recipes");
 
-// Recupere toutes les recettes
-router.get("/", (req, res) => {
-  Recipe.find()
+// Recupérer toutes les recettes de l'utilisateur de la session en cours
+router.get("/:userId", (req, res) => {
+  Recipe.find({ user: req.params.userId })
     .then((data) => {
       res.json({ result: true, recipe: data });
     })

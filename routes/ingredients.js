@@ -3,8 +3,8 @@ var router = express.Router();
 const Ingredient = require("../models/ingredients");
 
 // Recuperation de tous les ingrédients selon user
-router.get("/", (req, res) => {
-  Ingredient.find({ user: req.body.token })
+router.get("/search/:userId", (req, res) => {
+  Ingredient.find({ user: req.params.userId })
     .then((data) => {
       res.json({ ingredient: data });
     })
