@@ -6,6 +6,8 @@ const User = require("../models/users");
 const { checkBody } = require("../modules/checkbody");
 const uid2 = require("uid2");
 const bcrypt = require("bcrypt");
+const cloudinary = require("../config/cloudinary");
+const uniqid = require("uniqid");
 
 router.post("/signup", (req, res) => {
   // Grabbed from emailregex.com
@@ -59,7 +61,7 @@ router.post("/signup", (req, res) => {
       });
 
       newUser.save().then((newDoc) => {
-        res.json({ result: true, token: newDoc.token, id: newDoc._id});
+        res.json({ result: true, token: newDoc.token, id: newDoc._id, avatar: newDoc.avatar ?? null});
       });
     } else {
       // User already exists in database
@@ -71,6 +73,48 @@ router.post("/signup", (req, res) => {
   });
 });
 
+// upload avatar après signup
+router.put("/avatar/:userId", async (req, res) => {
+  try {
+    // Vérif fichier
+    if (!req.files || !req.files.avatar) {
+      return res.json({ result: false, error: "No avatar uploaded" });
+    }
+
+    const avatar = req.files.avatar;
+
+    // Fichier temporaire
+    const tempPath = `/tmp/${uniqid()}.jpg`;
+    await avatar.mv(tempPath);
+
+    // Upload Cloudinary
+    const uploadResult = await cloudinary.uploader.upload(tempPath, {
+      folder: "avatars",
+    });
+
+    // Update user
+    const user = await User.findByIdAndUpdate(
+      req.params.userId,
+      { avatar: uploadResult.secure_url },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.json({ result: false, error: "User not found" });
+    }
+
+    // Réponse
+    res.json({
+      result: true,
+      avatar: user.avatar,
+    });
+  } catch (error) {
+    console.error(error);
+    res.json({ result: false, error: error.message });
+  }
+});
+
+
 router.post("/signin", (req, res) => {
   if (!checkBody(req.body, ["mail", "password"])) {
     res.json({ result: false, error: "Email ou mot de passe non renseigné" });
@@ -79,7 +123,7 @@ router.post("/signin", (req, res) => {
 
   User.findOne({ mail: req.body.mail }).then((data) => {
     if (data && bcrypt.compareSync(req.body.password, data.password)) {
-      res.json({ result: true, token: data.token, id: data._id });
+      res.json({ result: true, token: data.token, id: data._id, avatar: data.avatar ?? null});
     } else {
       res.json({
         result: false,
@@ -98,7 +142,7 @@ router.get("/isConnected/:token", (req, res) => {
           firstname: data.firstname,
           lastname: data.lastname,
           restaurantName: data.restaurantName,
-          avatar: data.avatar,
+          avatar: data.avatar ?? null,
         },
       });
     } else {
@@ -106,5 +150,29 @@ router.get("/isConnected/:token", (req, res) => {
     }
   });
 });
+
+// test route to get all users
+router.get("/", (req, res) => {
+  User.find()
+    .then((data) => {
+      res.json({ result: true, users: data });
+    })
+    .catch((err) => {
+      res.json({ result: false, error: err });
+    });
+});  
+
+// test route to delete a user by its id
+router.delete("/:id", (req, res) => {
+  User.deleteOne({ _id: req.params.id })
+    .then((data) => {
+      if (data.deletedCount > 0) {
+        res.json({ result: true, data: data });
+      } else {
+        res.json({ result: false, error: "User not found" });
+      }
+    }) 
+    .catch((err) => {res.json({ result: false, error: err });});
+}); 
 
 module.exports = router;
