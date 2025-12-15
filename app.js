@@ -10,23 +10,28 @@ var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var ingredientsRouter = require("./routes/ingredients");
 var recipesRouter = require("./routes/recipes");
+var recipeCardsRouter = require("./routes/recipeCards");
 const categoriesRouter = require('./routes/categories');
+const fileUpload = require("express-fileupload");
+const cors = require("cors");
 
 var app = express();
 
-const cors = require("cors");
 app.use(cors());
-
+app.use(fileUpload({
+  useTempFiles: true,
+  tempFileDir: "/tmp",
+}));
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/ingredients", ingredientsRouter);
 app.use("/recipes", recipesRouter);
+app.use("/recipecards", recipeCardsRouter);
 app.use('/categories', categoriesRouter);
 
 module.exports = app;
