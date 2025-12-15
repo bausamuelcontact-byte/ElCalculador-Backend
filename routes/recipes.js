@@ -4,8 +4,8 @@ const Recipe = require("../models/recipes");
 
 // Recupere toutes les recettes
 router.get("/search/:userId", (req, res) => {
-  Ingredient.find({ user: req.params.userId });
-  if (!req.params.id) return res.json({ result: false, error: "Id manquant" });
+  if (!req.params.userId)
+    return res.json({ result: false, error: "Id manquant" });
   Recipe.find({ user: req.params.userId })
     .then((data) => {
       if (data) {
@@ -19,12 +19,12 @@ router.get("/search/:userId", (req, res) => {
 
 //Création d'une nouvelle recette
 router.post("/", (req, res) => {
-  const { name, ingredients, price, tva, user, allergens } = req.body;
+  const { name, ingredients, price, tva, id, allergens } = req.body;
 
-  if (!name || !ingredients || !price || !tva || !user || !allergens)
+  if (!name || !ingredients || !price || !tva || !id || !allergens)
     return res.json({ result: false, error: "Missing Information" });
 
-  Recipe.findOne({ user: req.body.user, name: req.body.name })
+  Recipe.findOne({ user: req.body.id, name: req.body.name })
     .then((existingRecipe) => {
       if (existingRecipe)
         return res.json({ result: false, error: "Ingredient already exists" });
