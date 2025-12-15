@@ -2,20 +2,17 @@ var express = require("express");
 var router = express.Router();
 const Recipe = require("../models/recipes");
 
-// Recupere toutes les recettes d'un utilisateur
-router.get("/:userId", (req, res) => {
+// Recupere toutes les recettes
+router.get("/search/:userId", (req, res) => {
+  Ingredient.find({ user: req.params.userId });
+  if (!req.params.id) return res.json({ result: false, error: "Id manquant" });
   Recipe.find({ user: req.params.userId })
     .then((data) => {
-      res.json({ result: true, recipe: data });
-    })
-    .catch((err) => console.error("Erreur de recherche recette :", err));
-});
-
-// récupère toutes les recettes
-router.get("/", (req, res) => {
-  Recipe.find()
-    .then((data) => {
-      res.json({ result: true, recipe: data });
+      if (data) {
+        res.json({ recipe: data });
+      } else {
+        res.json({ recipe: "Aucune recette de trouvée" });
+      }
     })
     .catch((err) => console.error("Erreur de recherche recette :", err));
 }); 
@@ -46,25 +43,37 @@ router.get("/withIngredients/:id", (req, res) => {
 
 //Création d'une nouvelle recette
 router.post("/", (req, res) => {
-  const newRecipe = new Recipe({
-    name: req.body.name,
-    price: req.body.price,
-    allergens: req.body.allergens,
-    ingredients: req.body.ingredients,
-    user: req.body.userId,
-    TVA: req.body.tva,
-  });
-  newRecipe
-    .save()
-    .then(() => {
-      res.json({ result: true });
+  const { name, ingredients, price, tva, user, allergens } = req.body;
+
+  if (!name || !ingredients || !price || !tva || !user || !allergens)
+    return res.json({ result: false, error: "Missing Information" });
+
+  Recipe.findOne({ user: req.body.user, name: req.body.name })
+    .then((existingRecipe) => {
+      if (existingRecipe)
+        return res.json({ result: false, error: "Ingredient already exists" });
+      const newRecipe = new Recipe({
+        name: req.body.name,
+        price: req.body.price,
+        allergens: req.body.allergens,
+        ingredients: req.body.ingredients,
+        user: req.body.id,
+        TVA: req.body.tva,
+      });
+      newRecipe.save().then(() => {
+        res.json({ result: true });
+      });
     })
     .catch((err) => console.error("Probleme ajout ingredient :", err));
 });
 
-// [{ingredient:6936a41fb4194f05f9184897, quantity: 3, unit: piece},{ingredient:6936a3f4f9e49241fec54fd3, quantity: 2, unit: gr}]
-// // Modification des recettes
+// Modification des recettes
 router.put("/", (req, res) => {
+  const { name, ingredients, price, tva, user, allergens } = req.body;
+
+  if (!name || !ingredients || !price || !tva || !user || !allergens)
+    return res.json({ result: false, error: "Missing Information" });
+
   Recipe.updateOne(
     { _id: req.body.id },
     {
@@ -89,6 +98,11 @@ router.put("/", (req, res) => {
 
 //Modification/Suppression Ingrédient
 router.put("/ingredients", (req, res) => {
+  const { name, ingredients, price, tva, id, allergens } = req.body;
+
+  if (!name || !ingredients || !price || !tva || !id || !allergens)
+    return res.json({ result: false, error: "Missing Information" });
+
   Recipe.updateOne(
     { _id: req.body.id },
     {
@@ -108,10 +122,16 @@ router.put("/ingredients", (req, res) => {
 });
 
 //Suppression d'une recette
-router.delete("/:id", (req, res) => {
-  Recipe.deleteOne({ _id: req.params.id })
-    .then(() => {
-      res.json({ result: true });
+router.delete("/", (req, res) => {
+  if (!req.body.id) return res.json({ result: false, error: "Id manquant" });
+  Recipe.deleteOne({ _id: req.body.id });
+  Recipe.findOne({ _id: req.body.id })
+    .then((data) => {
+      if (data) {
+        res.json({ result: false, error: "Erreur de suppression" });
+      } else {
+        res.json({ result: true });
+      }
     })
     .catch((err) => console.error("Probleme de suppression one :", err));
 });
