@@ -15,6 +15,19 @@ router.get("/search/:userId", (req, res) => {
     .catch((err) => console.error("Erreur de recuperation :", err));
 });
 
+//Recuperation ingredient avec id ingredient
+router.get("/searchingredient/:ingredientId", (req, res) => {
+  Ingredient.findOne({ _id: req.params.ingredientId })
+    .then((data) => {
+      if (data) {
+        res.json({ ingredient: data });
+      } else {
+        res.json({ ingredient: "aucun ingrédient trouvé" });
+      }
+    })
+    .catch((err) => console.error("Erreur de recuperation :", err));
+});
+
 // Création d'un ingrédient
 router.post("/", (req, res) => {
   const { name, quantity, price, unit, tva, user } = req.body;
