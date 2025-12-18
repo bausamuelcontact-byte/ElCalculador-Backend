@@ -15,6 +15,19 @@ router.get("/search/:userId", (req, res) => {
     .catch((err) => console.error("Erreur de recuperation :", err));
 });
 
+//Recuperation ingredient avec id ingredient
+router.get("/searchingredient/:ingredientId", (req, res) => {
+  Ingredient.findOne({ _id: req.params.ingredientId })
+    .then((data) => {
+      if (data) {
+        res.json({ ingredient: data });
+      } else {
+        res.json({ ingredient: "aucun ingrédient trouvé" });
+      }
+    })
+    .catch((err) => console.error("Erreur de recuperation :", err));
+});
+
 // Création d'un ingrédient
 router.post("/", (req, res) => {
   const { name, quantity, price, unit, tva, user } = req.body;
@@ -32,7 +45,7 @@ router.post("/", (req, res) => {
         quantity: req.body.quantity,
         price: req.body.price,
         unit: req.body.unit,
-        TVA: req.body.tva,
+        tva: req.body.tva,
         user: req.body.user,
       });
       newIngredient.save().then(() => {
@@ -44,9 +57,9 @@ router.post("/", (req, res) => {
 
 //Modification d'un ingredient selon id
 router.put("/", (req, res) => {
-  const { name, quantity, price, unit, tva, user } = req.body;
+  const { name, quantity, price, unit, tva, id } = req.body;
 
-  if (!name || !quantity || !price || !unit || !tva || !user)
+  if (!name || !quantity || !price || !unit || !tva || !id)
     return res.json({ result: false, error: "Missing Information" });
 
   Ingredient.updateOne(

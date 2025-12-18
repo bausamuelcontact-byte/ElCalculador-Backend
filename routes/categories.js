@@ -44,10 +44,28 @@ router.put("/update", (req, res) => {
 });
 
 // Afficher toutes les catégories d'un utilisateur
-router.get('/:userId', (req,res)=>{
-   Category.find({ user: req.params.userId })
-    .then(data => { res.json({ categories: data }) })
-    .catch(err => { res.json({ result: false, error: 'Server error' })});
+router.get("/:userId", (req, res) => {
+  Category.find({ user: req.params.userId })
+    .then((data) => {
+      res.json({ categories: data });
+    })
+    .catch((err) => {
+      res.json({ result: false, error: "Server error" });
+    });
+});
+
+// Afficher la categorie selon id d'une recette
+router.get("/recipeId/:recipeId", (req, res) => {
+  Category.find({ recipes: req.params.recipeId })
+    .populate("recipes")
+    .then((data) => {
+      console.log(data);
+
+      res.json({ category: data });
+    })
+    .catch((err) => {
+      res.json({ result: false, error: "Server error" });
+    });
 });
 
 // Ajouter une nouvelle recette à une catégorie
@@ -57,13 +75,20 @@ router.put("/addRecipeToCategory", (req, res) => {
       if (!data) {
         return res.json({ result: false, error: "Category not found" });
       }
-      if (data.recipes.some((e) => e.toString() === req.body.recipeId)) {
+      // Vérifier si la recette existe déjà dans cette catégorie
+      if (
+        data.recipes.some((e) => e === req.body.recipeId) ||
+        !req.body.recipeId
+      ) {
         return res.json({
           result: false,
-          error: "Recipe already registred in this category",
+          message: "Recipe already registred in this category",
         });
       }
-      data.recipes.push(new mongoose.Types.ObjectId(req.body.recipeId));
+      // Ajouter la recette à la catégorie
+      if (req.body.recipeId) {
+        data.recipes.push(req.body.recipeId);
+      }
       data.save().then((data) => {
         res.json({ result: true, message: `Recipe added to ${data.name}` });
       });

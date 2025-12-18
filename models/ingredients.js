@@ -5,7 +5,7 @@ const ingredientSchema = mongoose.Schema({
   quantity: Number,
   price: Number,
   unit: String,
-  TVA: Number,
+  tva: Number,
   user: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
 });
 
