@@ -31,6 +31,7 @@ router.post("/add/:userId", (req, res) => {
     });
 });
 
+
 // Modifier le nom d'une catégorie existante
 router.put("/update", (req, res) => {
   Category.updateOne({ _id: req.body.categoryId }, { name: req.body.name })
