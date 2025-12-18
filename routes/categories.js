@@ -7,11 +7,11 @@ const Recipe = require("../models/recipes");
 const Category = require("../models/categories");
 
 // Créer une nouvelle catégorie de recettes
-router.post("/add", (req, res) => {
+router.post("/add/:userId", (req, res) => {
   if (!req.body.name)
     return res.json({ result: false, error: "Missing field" });
 
-  Category.findOne({ name: req.body.name, user: req.body.userId })
+  Category.findOne({ name: req.body.name, user: req.params.userId })
     .then((exestingCategory) => {
       if (exestingCategory)
         return res.json({ result: false, error: "category already exists" });
@@ -19,7 +19,7 @@ router.post("/add", (req, res) => {
       const newCategory = new Category({
         name: req.body.name,
         recipes: [],
-        user: req.body.userId,
+        user: req.params.userId,
       });
 
       newCategory.save().then((data) => {
@@ -30,6 +30,7 @@ router.post("/add", (req, res) => {
       res.json({ result: false, error: "Server error" });
     });
 });
+
 
 // Modifier le nom d'une catégorie existante
 router.put("/update", (req, res) => {
