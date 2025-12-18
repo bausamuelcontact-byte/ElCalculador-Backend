@@ -63,10 +63,10 @@ router.post("/", (req, res) => {
         allergens: req.body.allergens,
         ingredients: req.body.ingredients,
         user: req.body.id,
-        TVA: req.body.tva,
+        tva: req.body.tva,
       });
-      newRecipe.save().then(() => {
-        res.json({ result: true });
+      newRecipe.save().then((data) => {
+        res.json({ result: true, recipe: data });
       });
     })
     .catch((err) => console.error("Probleme ajout ingredient :", err));

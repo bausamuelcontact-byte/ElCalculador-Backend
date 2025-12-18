@@ -31,7 +31,6 @@ router.post("/add/:userId", (req, res) => {
     });
 });
 
-
 // Modifier le nom d'une catégorie existante
 router.put("/update", (req, res) => {
   Category.updateOne({ _id: req.body.categoryId }, { name: req.body.name })
@@ -96,6 +95,34 @@ router.put("/addRecipeToCategory", (req, res) => {
     .catch((err) => {
       console.log(err);
       res.json({ result: false });
+    });
+});
+
+// Nique ta mere sale code
+router.put("/changecategory", (req, res) => {
+  Category.find({ recipes: req.body.recipeId })
+    .populate("recipes")
+    .then((data) => {
+      console.log(data);
+      Category.updateOne(
+        { _id: data[0]._id },
+        { $pull: { recipes: req.body.recipeId } }
+      ).then(() => {
+        Category.findById({ _id: req.body.categoryId }).then((dataa) => {
+          if (!dataa) {
+            return res.json({ result: false, error: "Category not found" });
+          }
+          // Ajouter la recette à la catégorie
+          if (req.body.recipeId) {
+            dataa.recipes.push(req.body.recipeId);
+            return dataa.save();
+          }
+        });
+        res.json({ category: data });
+      });
+    })
+    .catch((err) => {
+      res.json({ result: false, error: "Server error" });
     });
 });
 
