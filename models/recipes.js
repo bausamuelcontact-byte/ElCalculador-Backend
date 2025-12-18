@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const recipeSchema = mongoose.Schema({
   name: String,
   price: Number,
-  TVA: Number,
+  tva: Number,
   allergens: [String],
   ingredients: [
     {

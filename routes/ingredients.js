@@ -45,7 +45,7 @@ router.post("/", (req, res) => {
         quantity: req.body.quantity,
         price: req.body.price,
         unit: req.body.unit,
-        TVA: req.body.tva,
+        tva: req.body.tva,
         user: req.body.user,
       });
       newIngredient.save().then(() => {
@@ -57,9 +57,9 @@ router.post("/", (req, res) => {
 
 //Modification d'un ingredient selon id
 router.put("/", (req, res) => {
-  const { name, quantity, price, unit, tva, user } = req.body;
+  const { name, quantity, price, unit, tva, id } = req.body;
 
-  if (!name || !quantity || !price || !unit || !tva || !user)
+  if (!name || !quantity || !price || !unit || !tva || !id)
     return res.json({ result: false, error: "Missing Information" });
 
   Ingredient.updateOne(
