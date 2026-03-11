@@ -98,7 +98,7 @@ router.put("/addRecipeToCategory", (req, res) => {
     });
 });
 
-// Nique ta mere sale code
+// Modifier la catégorie d'une recette
 router.put("/changecategory", (req, res) => {
   Category.find({ recipes: req.body.recipeId })
     .populate("recipes")

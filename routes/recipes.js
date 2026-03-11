@@ -26,7 +26,7 @@ router.get("/withIngredients/user/:userId", (req, res) => {
       res.json({ result: true, recipe: data });
     })
     .catch((err) =>
-      console.error("Erreur de recherche recette avec ingrédients :", err)
+      console.error("Erreur de recherche recette avec ingrédients :", err),
     );
 });
 
@@ -42,7 +42,7 @@ router.get("/withIngredients/:id", (req, res) => {
       }
     })
     .catch((err) =>
-      console.error("Erreur de recherche recette avec ingrédients :", err)
+      console.error("Erreur de recherche recette avec ingrédients :", err),
     );
 });
 
@@ -50,7 +50,7 @@ router.get("/withIngredients/:id", (req, res) => {
 router.post("/", (req, res) => {
   const { name, ingredients, price, tva, id, allergens } = req.body;
 
-  if (!name || !ingredients || !price || !tva || !id || !allergens)
+  if (!name || !ingredients || !price || !tva || !id)
     return res.json({ result: false, error: "Missing Information" });
 
   Recipe.findOne({ user: req.body.id, name: req.body.name })
@@ -87,7 +87,7 @@ router.put("/", (req, res) => {
       price: req.body.price,
       TVA: req.body.tva,
       allergens: req.body.allergens,
-    }
+    },
   )
     .catch((err) => console.error("Probleme de modification :", err))
     .then(() => {
@@ -112,7 +112,7 @@ router.put("/ingredients", (req, res) => {
     { _id: req.body.id },
     {
       ingredients: req.body.ingredients,
-    }
+    },
   )
     .catch((err) => console.error("Probleme de modification :", err))
     .then(() => {
