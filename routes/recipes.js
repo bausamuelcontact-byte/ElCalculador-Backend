@@ -129,8 +129,9 @@ router.put("/ingredients", (req, res) => {
 //Suppression d'une recette
 router.delete("/", (req, res) => {
   if (!req.body.id) return res.json({ result: false, error: "Id manquant" });
-  Recipe.deleteOne({ _id: req.body.id });
-  Recipe.findOne({ _id: req.body.id })
+
+  Recipe.deleteOne({ _id: req.body.id })
+    .then(() => Recipe.findOne({ _id: req.body.id }))
     .then((data) => {
       if (data) {
         res.json({ result: false, error: "Erreur de suppression" });
@@ -138,6 +139,6 @@ router.delete("/", (req, res) => {
         res.json({ result: true });
       }
     })
-    .catch((err) => console.error("Probleme de suppression one :", err));
+    .catch((err) => console.error("Probleme de suppression :", err));
 });
 module.exports = router;
